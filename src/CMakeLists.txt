@@ -12,4 +12,6 @@ target_sources(cpp-lox
 		main.cpp
 	PRIVATE
 		lox.cpp
+		scanner.cpp
+		token.cpp
 )
