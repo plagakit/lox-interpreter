@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
-project (cpp-lox
+project (cpplox
 	LANGUAGES CXX
 	VERSION 0.1
 )

@@ -3,13 +3,28 @@
 #include "scanner.h"
 #include "token.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 
 bool Lox::hadError = false;
 
 void Lox::runFile(const std::string& path)
 {
-	std::cout << "Running files is not implemented yet.\n";
+	std::stringstream buffer;
+	std::ifstream rfile;
+
+	rfile.open(path);
+	if (rfile.is_open())
+	{
+		buffer << rfile.rdbuf();
+		run(buffer.str());
+	}
+	else
+	{
+		std::cout << "Error reading file.\n";
+		exit(65);
+	}
 }
 
 void Lox::runPrompt()

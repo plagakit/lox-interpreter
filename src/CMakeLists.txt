@@ -1,13 +1,13 @@
-﻿add_executable(cpp-lox)
+﻿add_executable(cpplox)
 
-target_include_directories(cpp-lox
+target_include_directories(cpplox
 	PUBLIC
 		${PROJECT_SOURCE_DIR}/include
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_sources(cpp-lox
+target_sources(cpplox
 	PUBLIC
 		main.cpp
 	PRIVATE
