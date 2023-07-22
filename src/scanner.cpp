@@ -53,7 +53,7 @@ void Scanner::scanToken()
 			break;
 		case ' ':
 		case '\r':
-		case 't':
+		case '\t':
 			break;
 		case '\n':
 			line++;
