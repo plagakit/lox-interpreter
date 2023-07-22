@@ -13,15 +13,15 @@ std::string Token::toString() const
 {
 	std::ostringstream ss;
 	ss << tokenTypeNames.at(type) << " ";
-	ss << lexeme << " ";
+
+	if (lexeme != "")
+		ss << lexeme << " ";
 	
 	if (type == STRING)
-		ss << std::any_cast<std::string>(literal);
+		ss << std::any_cast<std::string>(literal) << " ";
 	else if (type == NUMBER)
-		ss << std::any_cast<double>(literal);
-	else
-		ss << "null";
-	
-	ss << " " << std::to_string(line);
+		ss << std::any_cast<double>(literal) << " ";
+
+	ss << std::to_string(line);
 	return ss.str();
 }

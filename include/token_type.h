@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <unordered_map >
 
 enum TokenType {
 	// Single character tokens
@@ -24,7 +24,7 @@ enum TokenType {
 	END_OF_FILE
 };
 
-static const std::map<TokenType, std::string> tokenTypeNames
+static const std::unordered_map<TokenType, std::string> tokenTypeNames
 {
 	{LEFT_PAREN, "LEFT_PAREN"},
 	{RIGHT_PAREN, "RIGHT_PAREN"},

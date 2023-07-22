@@ -60,14 +60,19 @@ void Scanner::scanToken()
 			break;
 		case '"': string(); break;
 		default:
-			Lox::error(line, "Unexpected character '" + std::string(1, c) + "'.");
+			if (isDigit(c))
+				number();
+			else if (isAlpha(c))
+				identifier();
+			else
+				Lox::error(line, "Unexpected character '" + std::string(1, c) + "'.");
 			break;
 	}
 }
 
 void Scanner::addToken(TokenType type)
 {
-	addToken(type, "");
+	addToken(type, std::make_any<std::string>(""));
 }
 
 void Scanner::addToken(TokenType type, std::any literal)
@@ -111,9 +116,57 @@ void Scanner::string()
 	addToken(STRING, std::make_any<std::string>(value));
 }
 
+void Scanner::number()
+{
+	while (isDigit(peek()))
+		advance();
+
+	if (peek() == '.' && isDigit(peekNext()))
+	{
+		advance();
+		while (isDigit(peek()))
+			advance();
+	}
+	
+	double value = std::stod(source.substr(start, current - start));           
+	addToken(NUMBER, std::make_any<double>(value));
+}
+
+void Scanner::identifier()
+{
+	while (isAlphaNumeric(peek()))
+		advance();
+
+	std::string text = source.substr(start, current - start);
+	TokenType type = IDENTIFIER;
+
+	auto keyword = keywords.find(text);
+	if (keyword != keywords.end())
+		type = keyword->second;
+
+	addToken(type);
+}
+
 bool Scanner::isAtEnd() const
 {
 	return current >= source.length();
+}
+
+bool Scanner::isDigit(char c) const
+{
+	return c >= '0' && c <= '9';
+}
+
+bool Scanner::isAlpha(char c) const
+{
+	return (c >= 'a' && c <= 'z')
+		|| (c >= 'A' && c <= 'Z')
+		|| c == '_';
+}
+
+bool Scanner::isAlphaNumeric(char c) const
+{
+	return isDigit(c) || isAlpha(c);
 }
 
 char Scanner::peek() const
@@ -121,4 +174,11 @@ char Scanner::peek() const
 	if (isAtEnd())
 		return '\0';
 	return source[current];
+}
+
+char Scanner::peekNext() const
+{
+	if (current + 1 >= source.length())
+		return '\0';
+	return source[current + 1];
 }
