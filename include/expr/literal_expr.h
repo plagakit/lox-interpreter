@@ -7,6 +7,6 @@ class LiteralExpr : public Expr {
 	const std::any value;
 
 	LiteralExpr(std::any value);
-	std::any accept(ExprVisitor visitor) override;
+	std::any accept(ExprVisitor& visitor) override;
 
 };

@@ -5,11 +5,11 @@
 
 class BinaryExpr : public Expr {
 
-	const Expr left;
+	const Expr& left;
 	const Token op;
-	const Expr right;
+	const Expr& right;
 
-	BinaryExpr(Expr left, Token op, Expr right);
-	std::any accept(ExprVisitor visitor) override;
+	BinaryExpr(Expr& left, Token op, Expr& right);
+	std::any accept(ExprVisitor& visitor) override;
 
 };

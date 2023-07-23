@@ -10,9 +10,9 @@ class LiteralExpr;
 class ExprVisitor {
 
 public:
-	virtual std::any visitAssignExpr(AssignExpr expr);
-	virtual std::any visitBinaryExpr(BinaryExpr expr);
-	virtual std::any visitGroupingExpr(GroupingExpr expr);
-	virtual std::any visitLiteralExpr(LiteralExpr expr);
+	virtual std::any visitAssignExpr(AssignExpr expr) = 0;
+	virtual std::any visitBinaryExpr(BinaryExpr expr) = 0;
+	virtual std::any visitGroupingExpr(GroupingExpr expr) = 0;
+	virtual std::any visitLiteralExpr(LiteralExpr expr) = 0;
 
 };

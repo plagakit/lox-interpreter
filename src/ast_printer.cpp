@@ -7,7 +7,7 @@
 #include "expr/literal_expr.h"
 #include <sstream>
 
-std::string ASTPrinter::print(Expr expr)
+std::string ASTPrinter::print(Expr& expr)
 {
 	std::any str = expr.accept(*this);
 	return std::any_cast<std::string>(str);
@@ -33,7 +33,7 @@ std::any ASTPrinter::visitLiteralExpr(LiteralExpr expr)
 	return std::make_any<std::string>("");
 }
 
-template<std::same_as<Expr>... U>
+template<std::same_as<Expr&>... U>
 std::any ASTPrinter::parenthesize(std::any name, U... exprsPack)
 {
 	const int exprsCount = sizeof...(exprsPack);
@@ -42,7 +42,12 @@ std::any ASTPrinter::parenthesize(std::any name, U... exprsPack)
 	std::ostringstream str;
 	str << "(" << std::any_cast<std::string>(name);
 
-
+	for (int i = 0; i < exprsCount; i++)
+	{
+		std::any expr = exprs[i].accept(*this);
+		str << " " << std::any_cast<std::string>(expr);
+	}
 	
-
+	str << ")";
+	return std::make_any<std::string>(str.str());
 }

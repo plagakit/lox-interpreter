@@ -1,6 +1,11 @@
 #include <iostream>
 #include "lox.h"
 
+#include "expr/binary_expr.h"
+#include "expr/assign_expr.h"
+#include "expr/literal_expr.h"
+#include "expr/grouping_expr.h"
+
 int main(int argc, char* argv[])
 {
 	if (argc > 2)
