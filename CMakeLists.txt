@@ -5,7 +5,7 @@ project (cpplox
 	VERSION 0.1
 )
 
-# Use C++17
+# Use C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
