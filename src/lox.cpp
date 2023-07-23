@@ -2,6 +2,7 @@
 
 #include "scanner.h"
 #include "token.h"
+#include "expr/expr.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
