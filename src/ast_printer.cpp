@@ -16,7 +16,7 @@ std::string ASTPrinter::print(Expr& expr)
 
 std::any ASTPrinter::visitAssignExpr(AssignExpr expr)
 {
-	return std::make_any<std::string>("");
+	return parenthesize(std::string("assign " + expr.name.getLexeme() + " to: "), expr.value);
 }
 
 std::any ASTPrinter::visitBinaryExpr(BinaryExpr expr)
