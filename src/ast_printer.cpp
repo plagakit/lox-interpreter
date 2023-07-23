@@ -5,6 +5,7 @@
 #include "expr/binary_expr.h"
 #include "expr/grouping_expr.h"
 #include "expr/literal_expr.h"
+#include "expr/unary_expr.h"
 #include <sstream>
 
 std::string ASTPrinter::print(Expr& expr)
@@ -20,34 +21,36 @@ std::any ASTPrinter::visitAssignExpr(AssignExpr expr)
 
 std::any ASTPrinter::visitBinaryExpr(BinaryExpr expr)
 {
-	return std::make_any<std::string>("");
+	return parenthesize(expr.op.getLexeme(), expr.left, expr.right);
 }
 
 std::any ASTPrinter::visitGroupingExpr(GroupingExpr expr)
 {
-	return std::make_any<std::string>("");
+	return parenthesize("group", expr.expression);
 }
 
 std::any ASTPrinter::visitLiteralExpr(LiteralExpr expr)
 {
-	return std::make_any<std::string>("");
+	return parenthesize(std::any_cast<std::string>(expr.value));
 }
 
-template<std::same_as<Expr&>... U>
-std::any ASTPrinter::parenthesize(std::any name, U... exprsPack)
+std::any ASTPrinter::visitUnaryExpr(UnaryExpr expr)
 {
-	const int exprsCount = sizeof...(exprsPack);
-	Expr exprs[exprsCount] = { exprsPack... };
-	
-	std::ostringstream str;
-	str << "(" << std::any_cast<std::string>(name);
+	return parenthesize(expr.op.getLexeme(), expr.value);
+}
 
-	for (int i = 0; i < exprsCount; i++)
-	{
-		std::any expr = exprs[i].accept(*this);
-		str << " " << std::any_cast<std::string>(expr);
-	}
-	
+template <std::same_as<Expr>... U>
+std::any ASTPrinter::parenthesize(std::string name, U const&... exprsPack)
+{
+	std::ostringstream str;
+	str << "(" << name;
+	str << parenthesizeHelper(exprsPack...);
 	str << ")";
 	return std::make_any<std::string>(str.str());
+}
+
+template <std::same_as<Expr>... U>
+std::string ASTPrinter::parenthesizeHelper(U const&... expr)
+{
+	return (std::any_cast<std::string>(expr.accept(*this)) + ... + "");
 }

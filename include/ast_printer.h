@@ -14,8 +14,12 @@ public:
 	std::any visitBinaryExpr(BinaryExpr expr) override;
 	std::any visitGroupingExpr(GroupingExpr expr) override;
 	std::any visitLiteralExpr(LiteralExpr expr) override;
+	std::any visitUnaryExpr(UnaryExpr expr) override;
 
-	template<std::same_as<Expr&>... U>
-	std::any parenthesize(std::any name, U... exprs);
+	template<std::same_as<Expr>... U>
+	std::any parenthesize(std::string name, const U&... exprs);
+
+	template <std::same_as<Expr>... U>
+	std::string parenthesizeHelper(U const&... expr);
 
 };

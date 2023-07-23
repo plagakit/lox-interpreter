@@ -6,6 +6,6 @@
 class Expr {
 
 public:
-	virtual std::any accept(ExprVisitor& visitor) = 0;
+	virtual std::any accept(ExprVisitor& visitor) const = 0;
 
 };

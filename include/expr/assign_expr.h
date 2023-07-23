@@ -5,10 +5,11 @@
 
 class AssignExpr : public Expr {
 
+public:
 	const Token name;
 	const Expr& value;
 
 	AssignExpr(Token name, Expr& value);
-	std::any accept(ExprVisitor& visitor) override;
+	std::any accept(ExprVisitor& visitor) const override;
 
 };

@@ -3,14 +3,13 @@
 #include "expr.h"
 #include "token.h"
 
-class BinaryExpr : public Expr {
+class UnaryExpr : public Expr {
 
 public:
-	const Expr& left;
 	const Token op;
-	const Expr& right;
+	const Expr& value;
 
-	BinaryExpr(Expr& left, Token op, Expr& right);
+	UnaryExpr(Token op, Expr& value);
 	std::any accept(ExprVisitor& visitor) const override;
 
 };

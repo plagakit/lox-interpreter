@@ -25,3 +25,23 @@ std::string Token::toString() const
 	ss << std::to_string(line);
 	return ss.str();
 }
+
+TokenType Token::getType() const
+{
+	return type;
+}
+
+std::string Token::getLexeme() const
+{
+	return lexeme;
+}
+
+std::any Token::getLiteral() const
+{
+	return literal;
+}
+
+int Token::getLine() const
+{
+	return line;
+}

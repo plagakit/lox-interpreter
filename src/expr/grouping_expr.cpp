@@ -4,7 +4,7 @@ GroupingExpr::GroupingExpr(Expr& expression) :
 	expression(expression)
 {}
 
-std::any GroupingExpr::accept(ExprVisitor& visitor)
+std::any GroupingExpr::accept(ExprVisitor& visitor) const
 {
 	return visitor.visitGroupingExpr(*this);
 }
