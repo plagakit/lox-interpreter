@@ -3,4 +3,4 @@
 #include <string>
 #include <variant>
 
-using Object = std::variant<double, std::string, std::monostate>;
+using Object = std::variant<double, bool, std::string, std::monostate>;

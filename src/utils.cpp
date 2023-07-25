@@ -8,6 +8,9 @@ std::string Utils::objectToString(Object object)
 	else if (std::holds_alternative<double>(object))
 		return std::to_string(std::get<double>(object));
 
+	else if (std::holds_alternative<bool>(object))
+		return std::to_string(std::get<bool>(object));
+
 	else
 		return "nil";
 }
