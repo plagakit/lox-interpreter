@@ -72,10 +72,10 @@ void Scanner::scanToken()
 
 void Scanner::addToken(TokenType type)
 {
-	addToken(type, std::make_any<std::string>(""));
+	addToken(type, Object());
 }
 
-void Scanner::addToken(TokenType type, std::any literal)
+void Scanner::addToken(TokenType type, Object literal)
 {
 	std::string text = source.substr(start, current-start);
 	tokens.push_back(Token(type, text, literal, line));
@@ -113,7 +113,7 @@ void Scanner::string()
 	advance();
 
 	std::string value = source.substr(start + 1, current - start - 2);
-	addToken(STRING, std::make_any<std::string>(value));
+	addToken(STRING, Object(value));
 }
 
 void Scanner::number()
@@ -129,7 +129,7 @@ void Scanner::number()
 	}
 	
 	double value = std::stod(source.substr(start, current - start));           
-	addToken(NUMBER, std::make_any<double>(value));
+	addToken(NUMBER, Object(value));
 }
 
 void Scanner::identifier()

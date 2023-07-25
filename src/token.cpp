@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-Token::Token(TokenType type, const std::string& lexeme, const std::any& literal, int line) :
+Token::Token(TokenType type, const std::string& lexeme, const Object& literal, int line) :
 	type(type), 
 	lexeme(lexeme), 
 	literal(literal), 
@@ -18,9 +18,9 @@ std::string Token::toString() const
 		ss << lexeme << " ";
 	
 	if (type == STRING)
-		ss << std::any_cast<std::string>(literal) << " ";
+		ss << std::get<std::string>(literal) << " ";
 	else if (type == NUMBER)
-		ss << std::any_cast<double>(literal) << " ";
+		ss << std::get<double>(literal) << " ";
 
 	ss << std::to_string(line);
 	return ss.str();
@@ -36,7 +36,7 @@ std::string Token::getLexeme() const
 	return lexeme;
 }
 
-std::any Token::getLiteral() const
+Object Token::getLiteral() const
 {
 	return literal;
 }

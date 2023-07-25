@@ -40,7 +40,7 @@ private:
 
 	void scanToken();
 	void addToken(TokenType type);
-	void addToken(TokenType type, std::any literal);
+	void addToken(TokenType type, Object literal);
 
 	char advance();
 	bool match(char expected);
