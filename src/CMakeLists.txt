@@ -14,7 +14,7 @@ target_sources(cpplox
 		lox.cpp
 		scanner.cpp
 		token.cpp
-		ast_printer.cpp
+		parser.cpp
 )
 
 add_subdirectory(expr)

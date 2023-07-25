@@ -5,7 +5,7 @@
 #include "expr/unary_expr.h"
 #include "expr/literal_expr.h"
 #include "expr/grouping_expr.h"
-#include "ast_printer.h"
+#include "expr/ast_printer.h"
 
 int main(int argc, char* argv[])
 {
