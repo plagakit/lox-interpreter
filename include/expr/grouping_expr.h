@@ -8,6 +8,6 @@ public:
 	const Expr& expression;
 
 	GroupingExpr(Expr& expression);
-	std::any accept(ExprVisitor& visitor) const override;
+	Object accept(ExprVisitor& visitor) const override;
 
 };

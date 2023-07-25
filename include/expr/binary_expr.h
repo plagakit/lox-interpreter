@@ -11,6 +11,6 @@ public:
 	const Expr& right;
 
 	BinaryExpr(Expr& left, Token op, Expr& right);
-	std::any accept(ExprVisitor& visitor) const override;
+	Object accept(ExprVisitor& visitor) const override;
 
 };

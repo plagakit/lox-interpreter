@@ -4,7 +4,7 @@ AssignExpr::AssignExpr(Token name, Expr& value) :
 	name(name), value(value)
 {}
 
-std::any AssignExpr::accept(ExprVisitor& visitor) const
+Object AssignExpr::accept(ExprVisitor& visitor) const
 {
 	return visitor.visitAssignExpr(*this);
 }

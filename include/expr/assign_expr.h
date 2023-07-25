@@ -10,6 +10,6 @@ public:
 	const Expr& value;
 
 	AssignExpr(Token name, Expr& value);
-	std::any accept(ExprVisitor& visitor) const override;
+	Object accept(ExprVisitor& visitor) const override;
 
 };

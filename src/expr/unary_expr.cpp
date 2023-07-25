@@ -4,7 +4,7 @@ UnaryExpr::UnaryExpr(Token op, Expr& value) :
 	op(op), value(value)
 {}
 
-std::any UnaryExpr::accept(ExprVisitor& visitor) const
+Object UnaryExpr::accept(ExprVisitor& visitor) const
 {
 	return visitor.visitUnaryExpr(*this);
 }

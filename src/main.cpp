@@ -9,7 +9,7 @@
 
 int main(int argc, char* argv[])
 {
-	LiteralExpr a = LiteralExpr(std::make_any<double>(3.0));
+	LiteralExpr a = LiteralExpr(Object(3.0));
 	GroupingExpr g = GroupingExpr(a);
 	UnaryExpr u = UnaryExpr(Token(TokenType::MINUS, "-", "", 1), a);
 

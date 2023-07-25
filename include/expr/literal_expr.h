@@ -5,9 +5,9 @@
 class LiteralExpr : public Expr {
 
 public:
-	const std::any value;
+	const Object value;
 
-	LiteralExpr(std::any value);
-	std::any accept(ExprVisitor& visitor) const override;
+	LiteralExpr(Object value);
+	Object accept(ExprVisitor& visitor) const override;
 
 };

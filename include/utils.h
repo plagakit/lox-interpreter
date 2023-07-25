@@ -4,6 +4,7 @@
 
 class Utils {
 
+public:
 	static std::string objectToString(Object object);
 
 };

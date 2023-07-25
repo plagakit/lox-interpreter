@@ -10,14 +10,14 @@ class ASTPrinter : public ExprVisitor {
 public:
 	std::string print(Expr& expr);
 
-	std::any visitAssignExpr(AssignExpr expr) override;
-	std::any visitBinaryExpr(BinaryExpr expr) override;
-	std::any visitGroupingExpr(GroupingExpr expr) override;
-	std::any visitLiteralExpr(LiteralExpr expr) override;
-	std::any visitUnaryExpr(UnaryExpr expr) override;
+	Object visitAssignExpr(AssignExpr expr) override;
+	Object visitBinaryExpr(BinaryExpr expr) override;
+	Object visitGroupingExpr(GroupingExpr expr) override;
+	Object visitLiteralExpr(LiteralExpr expr) override;
+	Object visitUnaryExpr(UnaryExpr expr) override;
 
 	template<std::same_as<Expr>... U>
-	std::any parenthesize(std::string name, const U&... exprs);
+	Object parenthesize(std::string name, const U&... exprs);
 
 	template <std::same_as<Expr>... U>
 	std::string parenthesizeHelper(U const&... expr);
