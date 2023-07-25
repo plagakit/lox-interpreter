@@ -1,0 +1,3 @@
+// this is a comment
+var number = 1.3++ * (4.05 / 2);
+print("Hello world!");
