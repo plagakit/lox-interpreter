@@ -7,9 +7,9 @@ class UnaryExpr : public Expr {
 
 public:
 	const Token op;
-	const Expr& value;
+	const std::unique_ptr<Expr> value;
 
-	UnaryExpr(Token op, Expr& value);
-	Object accept(ExprVisitor& visitor) const override;
+	UnaryExpr(Token& op, std::unique_ptr<Expr>& value);
+	Object accept(ExprVisitor& visitor) override;
 
 };

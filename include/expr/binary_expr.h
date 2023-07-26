@@ -6,11 +6,11 @@
 class BinaryExpr : public Expr {
 
 public:
-	const Expr& left;
+	const std::unique_ptr<Expr> left;
 	const Token op;
-	const Expr& right;
+	const std::unique_ptr<Expr> right;
 
-	BinaryExpr(Expr& left, Token op, Expr& right);
-	Object accept(ExprVisitor& visitor) const override;
+	BinaryExpr(std::unique_ptr<Expr>& left, Token& op, std::unique_ptr<Expr>& right);
+	Object accept(ExprVisitor& visitor) override;
 
 };

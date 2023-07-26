@@ -8,6 +8,6 @@ public:
 	const Object value;
 
 	LiteralExpr(Object value);
-	Object accept(ExprVisitor& visitor) const override;
+	Object accept(ExprVisitor& visitor) override;
 
 };

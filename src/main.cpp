@@ -1,15 +1,9 @@
 #include <iostream>
 #include "lox.h"
 
-#include "expr/binary_expr.h"
-#include "expr/unary_expr.h"
-#include "expr/literal_expr.h"
-#include "expr/grouping_expr.h"
-#include "expr/ast_printer.h"
-
 int main(int argc, char* argv[])
 {
-	LiteralExpr a = LiteralExpr(Object(3.0));
+	/*LiteralExpr a = LiteralExpr(Object(3.0));
 	GroupingExpr g = GroupingExpr(a);
 	UnaryExpr u = UnaryExpr(Token(TokenType::MINUS, "-", "", 1), a);
 
@@ -19,8 +13,10 @@ int main(int argc, char* argv[])
 		u
 	);
 
+
 	ASTPrinter printer;
 	std::cout << printer.print(b) << std::endl;
+	*/
 	
 	if (argc > 2)
 	{

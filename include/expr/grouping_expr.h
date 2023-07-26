@@ -5,9 +5,9 @@
 class GroupingExpr : public Expr {
 
 public:
-	const Expr& expression;
+	const std::unique_ptr<Expr> expression;
 
-	GroupingExpr(Expr& expression);
-	Object accept(ExprVisitor& visitor) const override;
+	GroupingExpr(std::unique_ptr<Expr>& expression);
+	Object accept(ExprVisitor& visitor) override;
 
 };

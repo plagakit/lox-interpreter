@@ -7,9 +7,9 @@ class AssignExpr : public Expr {
 
 public:
 	const Token name;
-	const Expr& value;
+	const std::unique_ptr<Expr> value;
 
-	AssignExpr(Token name, Expr& value);
-	Object accept(ExprVisitor& visitor) const override;
+	AssignExpr(Token& name, std::unique_ptr<Expr>& value);
+	Object accept(ExprVisitor& visitor) override;
 
 };

@@ -3,96 +3,127 @@
 #include "expr/binary_expr.h"
 #include "expr/unary_expr.h"
 #include "expr/literal_expr.h"
+#include "expr/grouping_expr.h"
+#include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
 	tokens(tokens)
 {}
 
+std::unique_ptr<Expr> Parser::parse()
+{
+	try {
+		return expression();
+	} catch (ParseError) {
+		return nullptr;
+	}
+}
+
+
 // expression ::= equality
-std::shared_ptr<Expr> Parser::expression()
+std::unique_ptr<Expr> Parser::expression()
 {
 	return equality();
 }
 
 // equality ::= comparison ( ( "!=" | "==" ) comparison )* ;
-std::shared_ptr<Expr> Parser::equality()
+std::unique_ptr<Expr> Parser::equality()
 {
-	std::shared_ptr<Expr> expr = comparison();
+	std::unique_ptr<Expr> expr = comparison();
 
 	while (match({ BANG_EQUAL, EQUAL_EQUAL }))
 	{
 		Token op = previous();
-		std::shared_ptr<Expr> right = comparison();
-		expr = BinaryExpr(expr, op, right);
+		std::unique_ptr<Expr> right = comparison();
+		expr = std::make_unique<BinaryExpr>(expr, op, right);
 	}
 
 	return expr;
 }
 
 // comparison ::= term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-Expr& Parser::comparison()
+std::unique_ptr<Expr> Parser::comparison()
 {
-	Expr& expr = term();
+	std::unique_ptr<Expr> expr = term();
 
 	while (match({ GREATER, GREATER_EQUAL, LESS, LESS_EQUAL }))
 	{
 		Token op = previous();
-		Expr& right = term();
-		expr = BinaryExpr(expr, op, right);
+		std::unique_ptr<Expr> right = term();
+		expr = std::make_unique<BinaryExpr>(expr, op, right);
 	}
 
 	return expr;
 }
 
 // term	::= factor ( ( "+" | "-" ) factor )* ;
-Expr& Parser::term()
+std::unique_ptr<Expr> Parser::term()
 {
-	Expr& expr = factor();
+	std::unique_ptr<Expr> expr = factor();
 
 	while (match({ PLUS, MINUS }))
 	{
 		Token op = previous();
-		Expr& right = factor();
-		expr = BinaryExpr(expr, op, right);
+		std::unique_ptr<Expr> right = factor();
+		expr = std::make_unique<BinaryExpr>(expr, op, right);
 	}
 
 	return expr;
 }
 
 // factor ::= unary ( ( "*" | "/" ) unary )* ;
-Expr& Parser::factor()
+std::unique_ptr<Expr> Parser::factor()
 {
-	Expr& expr = unary();
+	std::unique_ptr<Expr> expr = unary();
 
 	while (match({ SLASH, STAR }))
 	{
 		Token op = previous();
-		Expr& right = unary();
-		expr = BinaryExpr(expr, op, right);
+		std::unique_ptr<Expr> right = unary();
+		expr = std::make_unique<BinaryExpr>(expr, op, right);
 	}
 
 	return expr;
 }
 
 // unary ::= ( "!" | "-" ) unary | primary;
-Expr& Parser::unary()
+std::unique_ptr<Expr> Parser::unary()
 {
 	if (match({ BANG, MINUS }))
 	{
 		Token op = previous();
-		Expr& right = unary();
-		UnaryExpr newExpr = UnaryExpr(op, right);
-		return newExpr;
+		std::unique_ptr<Expr> right = unary();
+		return std::make_unique<UnaryExpr>(op, right);
 	}
 
 	return primary();
 }
 
 //primary :: = NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")";
-Expr& Parser::primary()
+std::unique_ptr<Expr> Parser::primary()
 {
-	Expr& expr = nullptr;
-	if (match({ TRUE })) return std::make_shared<Expr>(LiteralExpr(false));
+	std::unique_ptr<Expr> expr = nullptr;
+	
+	if (match({ FALSE }))
+		return std::make_unique<LiteralExpr>(false);
+	
+	if (match({ TRUE }))
+		return std::make_unique<LiteralExpr>(true);
+	
+	if (match({ NIL }))
+		return std::make_unique<LiteralExpr>(std::monostate());
+
+	if (match({ NUMBER, STRING }))
+		return std::make_unique<LiteralExpr>(previous().getLiteral());
+
+	if (match({ LEFT_PAREN }))
+	{
+		std::unique_ptr<Expr> expr = expression();
+		consume(RIGHT_PAREN, "Expect ')' after expression.");
+		return std::make_unique<GroupingExpr>(expr);
+	}
+
+	throw error(peek(), "Expect expression.");
 }
 
 
@@ -116,6 +147,15 @@ bool Parser::match(const std::vector<TokenType>& types)
 	return false;
 }
 
+Token Parser::consume(TokenType type, const std::string& message)
+{
+	if (check(type))
+		return advance();
+
+	throw error(peek(), message);
+}
+
+
 bool Parser::check(TokenType type) const
 {
 	return peek().getType() == type;
@@ -134,4 +174,37 @@ Token Parser::peek() const
 Token Parser::previous() const
 {
 	return tokens[current - 1];
+}
+
+
+void Parser::synchronize()
+{
+	advance();
+
+	while (!isAtEnd())
+	{
+		if (previous().getType() == SEMICOLON)
+			return;
+
+		switch (peek().getType())
+		{
+		case CLASS:
+		case FUN:
+		case VAR:
+		case FOR:
+		case IF:
+		case WHILE:
+		case PRINT:
+		case RETURN:
+			return;
+		}
+
+		advance();
+	}
+}
+
+ParseError Parser::error(Token token, const std::string& message) const
+{
+	Lox::error(token, message);
+	return ParseError();
 }

@@ -1,10 +1,10 @@
 #include "expr/grouping_expr.h"
 
-GroupingExpr::GroupingExpr(Expr& expression) :
-	expression(expression)
+GroupingExpr::GroupingExpr(std::unique_ptr<Expr>& expression) :
+	expression(std::move(expression))
 {}
 
-Object GroupingExpr::accept(ExprVisitor& visitor) const
+Object GroupingExpr::accept(ExprVisitor& visitor)
 {
 	return visitor.visitGroupingExpr(*this);
 }

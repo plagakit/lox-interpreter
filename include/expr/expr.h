@@ -1,10 +1,12 @@
 #pragma once
 
 #include "expr_visitor.h"
+#include <memory>
 
 class Expr {
 
 public:
-	virtual Object accept(ExprVisitor& visitor) const = 0;
+	virtual ~Expr() = default;
+	virtual Object accept(ExprVisitor& visitor) = 0;
 
 };

@@ -1,8 +1,10 @@
 #include "lox.h"
 
 #include "scanner.h"
+#include "parser.h"
 #include "token.h"
 #include "expr/expr.h"
+#include "expr/ast_printer.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -50,15 +52,28 @@ void Lox::error(int line, const std::string& message)
 	report(line, "", message);
 }
 
+void Lox::error(Token token, const std::string& message)
+{
+	if (token.getType() == TokenType::END_OF_FILE)
+		report(token.getLine(), "at end", message);
+	else
+		report(token.getLine(), "at '" + token.getLexeme() + "'", message);
+}
+
+
 void Lox::run(const std::string& source)
 {
 	Scanner scanner = Scanner(source);
 	std::vector<Token> tokens = scanner.scanTokens();
+	
+	Parser parser = Parser(tokens);
+	std::unique_ptr<Expr> expression = parser.parse();
 
-	for (Token token : tokens)
-	{
-		std::cout << token.toString() << std::endl;
-	}
+	if (hadError)
+		return;
+
+	ASTPrinter astPrinter;
+	std::cout << astPrinter.print(expression) << std::endl;
 }
 
 void Lox::report(int line, const std::string& where, const std::string& message)

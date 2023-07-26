@@ -14,7 +14,7 @@ target_sources(cpplox
 		lox.cpp
 		scanner.cpp
 		token.cpp
-		#parser.cpp
+		parser.cpp
 		utils.cpp
 )
 

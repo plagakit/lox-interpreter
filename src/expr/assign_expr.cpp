@@ -1,10 +1,11 @@
 #include "expr/assign_expr.h"
 
-AssignExpr::AssignExpr(Token name, Expr& value) :
-	name(name), value(value)
+AssignExpr::AssignExpr(Token& name, std::unique_ptr<Expr>& value) :
+	name(std::move(name)), 
+	value(std::move(value))
 {}
 
-Object AssignExpr::accept(ExprVisitor& visitor) const
+Object AssignExpr::accept(ExprVisitor& visitor) 
 {
 	return visitor.visitAssignExpr(*this);
 }

@@ -11,10 +11,11 @@ class UnaryExpr;
 class ExprVisitor {
 
 public:
-	virtual Object visitAssignExpr(AssignExpr expr) = 0;
-	virtual Object visitBinaryExpr(BinaryExpr expr) = 0;
-	virtual Object visitGroupingExpr(GroupingExpr expr) = 0;
-	virtual Object visitLiteralExpr(LiteralExpr expr) = 0;
-	virtual Object visitUnaryExpr(UnaryExpr expr) = 0;
+	virtual ~ExprVisitor() = default;
+	virtual Object visitAssignExpr(AssignExpr& expr) = 0;
+	virtual Object visitBinaryExpr(BinaryExpr& expr) = 0;
+	virtual Object visitGroupingExpr(GroupingExpr& expr) = 0;
+	virtual Object visitLiteralExpr(LiteralExpr& expr) = 0;
+	virtual Object visitUnaryExpr(UnaryExpr& expr) = 0;
 
 };
