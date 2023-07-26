@@ -1,4 +1,5 @@
-﻿add_executable(cpplox)
+﻿# Compile lox as a library to be used by exe and unit tests
+add_library(cpplox)
 
 target_include_directories(cpplox
 	PUBLIC
@@ -9,8 +10,6 @@ target_include_directories(cpplox
 
 target_sources(cpplox
 	PUBLIC
-		main.cpp
-	PRIVATE
 		lox.cpp
 		scanner.cpp
 		token.cpp
@@ -19,3 +18,17 @@ target_sources(cpplox
 )
 
 add_subdirectory(expr)
+
+# Actual executable
+add_executable(lox-executable)
+set_target_properties(lox-executable PROPERTIES OUTPUT_NAME lox)
+
+target_include_directories(lox-executable
+	PUBLIC
+		${PROJECT_SOURCE_DIR}/include
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_sources(lox-executable PRIVATE main.cpp)
+target_link_libraries(lox-executable PRIVATE cpplox)

@@ -14,7 +14,7 @@ std::vector<Token> Scanner::scanTokens()
 		scanToken();
 	}
 
-	tokens.push_back(Token(END_OF_FILE, "", "", line));
+	tokens.push_back(Token(END_OF_FILE, "", std::monostate(), line));
 	return tokens;
 }
 
@@ -72,7 +72,7 @@ void Scanner::scanToken()
 
 void Scanner::addToken(TokenType type)
 {
-	addToken(type, Object());
+	addToken(type, std::monostate());
 }
 
 void Scanner::addToken(TokenType type, Object literal)
