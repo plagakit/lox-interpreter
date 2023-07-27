@@ -5,12 +5,17 @@
 #include "token.h"
 #include "expr/expr.h"
 #include "expr/ast_printer.h"
+#include "interpreter.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 
 bool Lox::hadError = false;
+bool Lox::hadRuntimeError = false;
+
+Interpreter Lox::interpreter = Interpreter();
 
 void Lox::runFile(const std::string& path)
 {
@@ -60,6 +65,12 @@ void Lox::error(Token token, const std::string& message)
 		report(token.getLine(), " at '" + token.getLexeme() + "'", message);
 }
 
+void Lox::runtimeError(RuntimeError error)
+{
+	std::cerr << error.message << "[line " << std::to_string(error.token.getLine()) << "]" << std::endl;
+	hadRuntimeError = true;
+}
+
 
 void Lox::run(const std::string& source)
 {
@@ -72,8 +83,10 @@ void Lox::run(const std::string& source)
 	if (hadError)
 		return;
 
-	ASTPrinter astPrinter;
-	std::cout << astPrinter.print(expression) << std::endl;
+	//ASTPrinter astPrinter;
+	//std::cout << astPrinter.print(expression) << std::endl;
+
+	interpreter.interpret(expression);
 }
 
 void Lox::report(int line, const std::string& where, const std::string& message)

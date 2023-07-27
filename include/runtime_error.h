@@ -5,10 +5,10 @@
 
 class RuntimeError {
 
+public:
 	const Token token;
 	const std::string message;
 
-public:
 	RuntimeError(const Token& token, const std::string& message);
 
 };
