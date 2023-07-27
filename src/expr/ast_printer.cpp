@@ -1,6 +1,5 @@
 #include "expr/ast_printer.h"
 
-#include "expr/expr.h"
 #include "expr/assign_expr.h"
 #include "expr/binary_expr.h"
 #include "expr/grouping_expr.h"

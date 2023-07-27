@@ -12,8 +12,10 @@ target_sources(cpplox
 	PUBLIC
 		lox.cpp
 		scanner.cpp
-		token.cpp
 		parser.cpp
+		interpreter.cpp
+		token.cpp
+		runtime_error.cpp
 		utils.cpp
 )
 
