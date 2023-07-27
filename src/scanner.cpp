@@ -142,8 +142,26 @@ void Scanner::identifier()
 
 	auto keyword = keywords.find(text);
 	if (keyword != keywords.end())
+	{
 		type = keyword->second;
-
+		
+		if (type == TRUE)
+		{
+			addToken(type, true);
+			return;
+		}
+		else if (type == FALSE)
+		{
+			addToken(type, false);
+			return;
+		}
+		else if (type == NIL)
+		{
+			addToken(type, std::monostate());
+			return;
+		}
+	}
+		
 	addToken(type);
 }
 
