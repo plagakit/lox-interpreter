@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <unordered_map >
+#include <unordered_map>
 
 enum TokenType {
 	// Single character tokens
