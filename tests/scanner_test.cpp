@@ -17,11 +17,10 @@ void compareTokens(const std::vector<Token>& v1, const std::vector<Token>& v2)
 }
 
 
-TEST(ScannerTest, ScanTokens) {
-
-	Scanner s1 = Scanner("var a = \"balls\";");
-	auto tk1 = s1.scanTokens();
-	auto cmp1 = {
+TEST(ScannerTest, GeneralTest) {
+	Scanner s = Scanner("var a = \"balls\";");
+	auto tks = s.scanTokens();
+	auto cmp = {
 		Token(VAR, "var", std::monostate(), 1),
 		Token(IDENTIFIER, "a", std::monostate(), 1),
 		Token(EQUAL, "=", std::monostate(), 1),
@@ -29,5 +28,17 @@ TEST(ScannerTest, ScanTokens) {
 		Token(SEMICOLON, ";", std::monostate(), 1),
 		Token(END_OF_FILE, "", std::monostate(), 1)
 	};
-	compareTokens(tk1, cmp1);
+	compareTokens(tks, cmp);
+}
+
+TEST(ScannerTest, LineNoTest) {
+	Scanner s = Scanner("a\n\n\n\na\na");
+	auto tks = s.scanTokens();
+	auto cmp = {
+		Token(IDENTIFIER, "a", std::monostate(), 1),
+		Token(IDENTIFIER, "a", std::monostate(), 5),
+		Token(IDENTIFIER, "a", std::monostate(), 6),
+		Token(END_OF_FILE, "", std::monostate(), 6)
+	};
+	compareTokens(tks, cmp);
 }
