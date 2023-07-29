@@ -1,25 +1,32 @@
 #pragma once
 
-
 #include "expr/expr_visitor.h"
+#include "stmt/stmt_visitor.h"
 #include <memory>
+#include <vector>
 
 class Token;
 class Expr;
+class Stmt;
 
-class Interpreter : public ExprVisitor {
+class Interpreter : public ExprVisitor, public StmtVisitor {
 
 public:
-	void interpret(const std::unique_ptr<Expr>& expression);
+	void interpret(const std::vector<std::unique_ptr<Stmt>>& statements);
 
-	Object visitAssignExpr(AssignExpr& expr);
-	Object visitBinaryExpr(BinaryExpr& expr);
-	Object visitGroupingExpr(GroupingExpr& expr);
-	Object visitLiteralExpr(LiteralExpr& expr);
-	Object visitUnaryExpr(UnaryExpr& expr);
+	Object visitAssignExpr(AssignExpr& expr) override;
+	Object visitBinaryExpr(BinaryExpr& expr) override;
+	Object visitGroupingExpr(GroupingExpr& expr) override;
+	Object visitLiteralExpr(LiteralExpr& expr) override;
+	Object visitUnaryExpr(UnaryExpr& expr) override;
+
+	void visitExpressionStmt(ExpressionStmt& stmt) override;
+	void visitPrintStmt(PrintStmt& stmt) override;
+
 
 private:
 	Object evaluate(const std::unique_ptr<Expr>& expr);
+	void execute(const std::unique_ptr<Stmt>& stmt);
 	bool isTruthy(const Object& object);
 	bool isEqual(const Object& a, const Object& b);
 	void checkNumberOperand(const Token& token, const Object& operand);

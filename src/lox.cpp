@@ -78,7 +78,7 @@ void Lox::run(const std::string& source)
 	std::vector<Token> tokens = scanner.scanTokens();
 	
 	Parser parser = Parser(tokens);
-	std::unique_ptr<Expr> expression = parser.parse();
+	auto statements = parser.parse();
 
 	if (hadError)
 		return;
@@ -86,7 +86,7 @@ void Lox::run(const std::string& source)
 	//ASTPrinter astPrinter;
 	//std::cout << astPrinter.print(expression) << std::endl;
 
-	interpreter.interpret(expression);
+	interpreter.interpret(statements);
 }
 
 void Lox::report(int line, const std::string& where, const std::string& message)

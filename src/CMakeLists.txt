@@ -20,6 +20,7 @@ target_sources(cpplox
 )
 
 add_subdirectory(expr)
+add_subdirectory(stmt)
 
 # Actual executable
 add_executable(lox-executable)

@@ -4,13 +4,24 @@
 #include "expr/unary_expr.h"
 #include "expr/literal_expr.h"
 #include "expr/grouping_expr.h"
+#include "stmt/print_stmt.h"
+#include "stmt/expression_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
 	tokens(tokens)
 {}
 
-std::unique_ptr<Expr> Parser::parse()
+std::vector<std::unique_ptr<Stmt>> Parser::parse()
+{
+	auto statements = std::vector<std::unique_ptr<Stmt>>();
+	while (!isAtEnd())
+		statements.push_back(statement());
+
+	return statements;
+}
+
+std::unique_ptr<Expr> Parser::parseExpr()
 {
 	try {
 		return expression();
@@ -19,6 +30,7 @@ std::unique_ptr<Expr> Parser::parse()
 	}
 }
 
+// EXPRESSIONS
 
 // expression ::= equality
 std::unique_ptr<Expr> Parser::expression()
@@ -126,6 +138,32 @@ std::unique_ptr<Expr> Parser::primary()
 	throw error(peek(), "Expect expression.");
 }
 
+// STATEMENTS
+
+std::unique_ptr<Stmt> Parser::statement()
+{
+	if (match({ PRINT }))
+		return printStatement();
+
+	return expressionStatement();
+}
+
+std::unique_ptr<Stmt> Parser::printStatement()
+{
+	auto value = expression();
+	consume(SEMICOLON, "Expect ';' after value.");
+	return std::make_unique<PrintStmt>(value);
+}
+
+std::unique_ptr<Stmt> Parser::expressionStatement()
+{
+	auto value = expression();
+	consume(SEMICOLON, "Expect ';' after value.");
+	return std::make_unique<ExpressionStmt>(value);
+}
+
+
+// HELPERS
 
 Token Parser::advance()
 {

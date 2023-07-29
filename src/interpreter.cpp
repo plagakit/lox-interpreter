@@ -2,27 +2,30 @@
 
 #include "lox.h"
 #include "runtime_error.h"
+#include "utils.h"
 #include "expr/assign_expr.h"
 #include "expr/binary_expr.h"
 #include "expr/grouping_expr.h"
 #include "expr/literal_expr.h"
 #include "expr/unary_expr.h"
-
-#include "utils.h"
+#include "stmt/expression_stmt.h"
+#include "stmt/print_stmt.h"
 #include <iostream>
 
-void Interpreter::interpret(const std::unique_ptr<Expr>& expression)
+void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
 {
 	try 
 	{
-		Object value = evaluate(expression);
-		std::cout << Utils::objectToString(value) << std::endl;
+		for (auto& statement : statements)
+			execute(statement);
 	}
 	catch (RuntimeError error)
 	{
 		Lox::runtimeError(error);
 	}
 }
+
+// EXPRESSIONS
 
 Object Interpreter::visitAssignExpr(AssignExpr& expr)
 {
@@ -107,10 +110,30 @@ Object Interpreter::visitUnaryExpr(UnaryExpr& expr)
 	return std::monostate();
 }
 
+// STATEMENTS
+
+void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
+{
+	evaluate(stmt.expression);
+}
+
+void Interpreter::visitPrintStmt(PrintStmt& stmt)
+{
+	Object value = evaluate(stmt.expression);
+	std::cout << Utils::objectToString(value) << std::endl;
+}
+
+
+// HELPERS
 
 Object Interpreter::evaluate(const std::unique_ptr<Expr>& expr)
 {
 	return expr->accept(*this);
+}
+
+void Interpreter::execute(const std::unique_ptr<Stmt>& stmt)
+{
+	stmt->accept(*this);
 }
 
 bool Interpreter::isTruthy(const Object& object)
