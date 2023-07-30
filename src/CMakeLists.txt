@@ -14,6 +14,7 @@ target_sources(cpplox
 		scanner.cpp
 		parser.cpp
 		interpreter.cpp
+		environment.cpp
 		token.cpp
 		runtime_error.cpp
 		utils.cpp

@@ -8,8 +8,10 @@
 #include "expr/grouping_expr.h"
 #include "expr/literal_expr.h"
 #include "expr/unary_expr.h"
+#include "expr/variable_expr.h"
 #include "stmt/expression_stmt.h"
 #include "stmt/print_stmt.h"
+#include "stmt/var_stmt.h"
 #include <iostream>
 
 void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
@@ -80,7 +82,11 @@ Object Interpreter::visitBinaryExpr(BinaryExpr& expr)
 
 	case BANG_EQUAL: return left != right;
 	case EQUAL_EQUAL: return left == right;
+	
+	default: break;
 	}
+
+	return std::monostate();
 }
 
 Object Interpreter::visitGroupingExpr(GroupingExpr& expr)
@@ -105,9 +111,16 @@ Object Interpreter::visitUnaryExpr(UnaryExpr& expr)
 	
 	case BANG:
 		return !isTruthy(right);
+
+	default: break;
 	}
 
 	return std::monostate();
+}
+
+Object Interpreter::visitVariableExpr(VariableExpr& expr)
+{
+	return environment.get(expr.name);
 }
 
 // STATEMENTS
@@ -123,6 +136,14 @@ void Interpreter::visitPrintStmt(PrintStmt& stmt)
 	std::cout << Utils::objectToString(value) << std::endl;
 }
 
+void Interpreter::visitVarStmt(VarStmt& stmt)
+{
+	Object value = std::monostate();
+	if (stmt.initializer)
+		value = evaluate(stmt.initializer);
+
+	environment.define(stmt.name.getLexeme(), value);
+}
 
 // HELPERS
 

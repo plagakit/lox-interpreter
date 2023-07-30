@@ -4,8 +4,10 @@
 #include "expr/unary_expr.h"
 #include "expr/literal_expr.h"
 #include "expr/grouping_expr.h"
+#include "expr/variable_expr.h"
 #include "stmt/print_stmt.h"
 #include "stmt/expression_stmt.h"
+#include "stmt/var_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
@@ -16,7 +18,7 @@ std::vector<std::unique_ptr<Stmt>> Parser::parse()
 {
 	auto statements = std::vector<std::unique_ptr<Stmt>>();
 	while (!isAtEnd())
-		statements.push_back(statement());
+		statements.push_back(declaration());
 
 	return statements;
 }
@@ -111,7 +113,7 @@ std::unique_ptr<Expr> Parser::unary()
 	return primary();
 }
 
-//primary :: = NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")";
+//primary :: = NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
 std::unique_ptr<Expr> Parser::primary()
 {
 	std::unique_ptr<Expr> expr = nullptr;
@@ -135,6 +137,12 @@ std::unique_ptr<Expr> Parser::primary()
 		return std::make_unique<GroupingExpr>(expr);
 	}
 
+	if (match({ IDENTIFIER }))
+	{
+		auto name = previous(); // passing in previous() means passing in an rvalue to a lvalue-expecting method...
+		return std::make_unique<VariableExpr>(name);
+	}
+
 	throw error(peek(), "Expect expression.");
 }
 
@@ -146,6 +154,34 @@ std::unique_ptr<Stmt> Parser::statement()
 		return printStatement();
 
 	return expressionStatement();
+}
+
+std::unique_ptr<Stmt> Parser::declaration()
+{
+	try
+	{
+		if (match({ VAR }))
+			return varDeclaration();
+
+		return statement();
+	}
+	catch (ParseError error)
+	{
+		synchronize();
+		return nullptr;
+	}
+}
+
+std::unique_ptr<Stmt> Parser::varDeclaration()
+{
+	Token name = consume(IDENTIFIER, "Expect variable name.");
+	
+	std::unique_ptr<Expr> initializer = nullptr;
+	if (match({ EQUAL }))
+		initializer = expression();
+
+	consume(SEMICOLON, "Expect ';' after variable declaration.");
+	return std::make_unique<VarStmt>(name, initializer);
 }
 
 std::unique_ptr<Stmt> Parser::printStatement()
@@ -235,6 +271,8 @@ void Parser::synchronize()
 		case PRINT:
 		case RETURN:
 			return;
+		default:
+			break;
 		}
 
 		advance();

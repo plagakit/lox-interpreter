@@ -7,6 +7,7 @@ class BinaryExpr;
 class GroupingExpr;
 class LiteralExpr;
 class UnaryExpr;
+class VariableExpr;
 
 class ExprVisitor {
 
@@ -17,5 +18,6 @@ public:
 	virtual Object visitGroupingExpr(GroupingExpr& expr) = 0;
 	virtual Object visitLiteralExpr(LiteralExpr& expr) = 0;
 	virtual Object visitUnaryExpr(UnaryExpr& expr) = 0;
+	virtual Object visitVariableExpr(VariableExpr& expr) = 0;
 
 };

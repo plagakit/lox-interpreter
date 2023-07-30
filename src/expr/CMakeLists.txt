@@ -5,5 +5,6 @@ target_sources(cpplox
 		grouping_expr.cpp
 		literal_expr.cpp
 		unary_expr.cpp
+		variable_expr.cpp
 		ast_printer.cpp
 )

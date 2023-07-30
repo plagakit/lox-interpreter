@@ -2,6 +2,7 @@
 
 #include "expr/expr_visitor.h"
 #include "stmt/stmt_visitor.h"
+#include "environment.h"
 #include <memory>
 #include <vector>
 
@@ -19,12 +20,15 @@ public:
 	Object visitGroupingExpr(GroupingExpr& expr) override;
 	Object visitLiteralExpr(LiteralExpr& expr) override;
 	Object visitUnaryExpr(UnaryExpr& expr) override;
+	Object visitVariableExpr(VariableExpr& expr) override;
 
 	void visitExpressionStmt(ExpressionStmt& stmt) override;
 	void visitPrintStmt(PrintStmt& stmt) override;
-
+	void visitVarStmt(VarStmt& stmt) override;
 
 private:
+	Environment environment;
+
 	Object evaluate(const std::unique_ptr<Expr>& expr);
 	void execute(const std::unique_ptr<Stmt>& stmt);
 	bool isTruthy(const Object& object);
