@@ -1,5 +1,6 @@
 #include "parser.h"
 
+#include "expr/assign_expr.h"
 #include "expr/binary_expr.h"
 #include "expr/unary_expr.h"
 #include "expr/literal_expr.h"
@@ -8,6 +9,7 @@
 #include "stmt/print_stmt.h"
 #include "stmt/expression_stmt.h"
 #include "stmt/var_stmt.h"
+#include "stmt/block_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
@@ -34,10 +36,36 @@ std::unique_ptr<Expr> Parser::parseExpr()
 
 // EXPRESSIONS
 
-// expression ::= equality
+// expression ::= assignment
 std::unique_ptr<Expr> Parser::expression()
 {
-	return equality();
+	return assignment();
+}
+
+// assignment ::= IDENTIFIER "=" assignment | equality ;
+std::unique_ptr<Expr> Parser::assignment()
+{
+	auto expr = equality();
+
+	if (match({ EQUAL }))
+	{
+		Token equals = previous();
+		auto value = assignment();
+
+		try
+		{
+			auto& varExpr = dynamic_cast<VariableExpr&>(*expr);
+			Token name = varExpr.name;
+			return std::make_unique<AssignExpr>(name, value);
+		}
+		catch (...)
+		{
+			error(equals, "Invalid assignment target.");
+		}
+	}
+
+	return expr;
+
 }
 
 // equality ::= comparison ( ( "!=" | "==" ) comparison )* ;
@@ -153,6 +181,9 @@ std::unique_ptr<Stmt> Parser::statement()
 	if (match({ PRINT }))
 		return printStatement();
 
+	if (match({ LEFT_BRACE }))
+		return blockStatement();
+
 	return expressionStatement();
 }
 
@@ -196,6 +227,23 @@ std::unique_ptr<Stmt> Parser::expressionStatement()
 	auto value = expression();
 	consume(SEMICOLON, "Expect ';' after value.");
 	return std::make_unique<ExpressionStmt>(value);
+}
+
+std::unique_ptr<Stmt> Parser::blockStatement()
+{
+	return std::make_unique<BlockStmt>(block());
+}
+
+
+std::vector<std::unique_ptr<Stmt>> Parser::block()
+{
+	auto statements = std::vector<std::unique_ptr<Stmt>>();
+
+	while (!check(RIGHT_BRACE) && !isAtEnd())
+		statements.push_back(declaration());
+
+	consume(RIGHT_BRACE, "Expect '}' after block.");
+	return statements;
 }
 
 

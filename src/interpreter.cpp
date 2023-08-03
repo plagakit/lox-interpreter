@@ -12,6 +12,7 @@
 #include "stmt/expression_stmt.h"
 #include "stmt/print_stmt.h"
 #include "stmt/var_stmt.h"
+#include "stmt/block_stmt.h"
 #include <iostream>
 
 void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
@@ -31,7 +32,9 @@ void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements
 
 Object Interpreter::visitAssignExpr(AssignExpr& expr)
 {
-	return std::monostate();
+	Object value = evaluate(expr.value);
+	environment.assign(expr.name, value);
+	return value;
 }
 
 Object Interpreter::visitBinaryExpr(BinaryExpr& expr)
@@ -145,6 +148,13 @@ void Interpreter::visitVarStmt(VarStmt& stmt)
 	environment.define(stmt.name.getLexeme(), value);
 }
 
+void Interpreter::visitBlockStmt(BlockStmt& stmt)
+{
+	auto newEnv = Environment(environment);
+	executeBlock(stmt.statements, newEnv);
+}
+
+
 // HELPERS
 
 Object Interpreter::evaluate(const std::unique_ptr<Expr>& expr)
@@ -155,6 +165,25 @@ Object Interpreter::evaluate(const std::unique_ptr<Expr>& expr)
 void Interpreter::execute(const std::unique_ptr<Stmt>& stmt)
 {
 	stmt->accept(*this);
+}
+
+void Interpreter::executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, Environment& newEnv)
+{
+	auto temp = environment;
+	try
+	{
+		environment = newEnv;
+
+		for (auto& stmt : stmts)
+			execute(stmt);
+
+	}
+	catch (RuntimeError e) 
+	{ 
+		environment = temp;
+		throw e;
+	}
+	environment = temp;
 }
 
 bool Interpreter::isTruthy(const Object& object)

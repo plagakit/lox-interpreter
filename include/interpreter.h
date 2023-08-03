@@ -25,12 +25,14 @@ public:
 	void visitExpressionStmt(ExpressionStmt& stmt) override;
 	void visitPrintStmt(PrintStmt& stmt) override;
 	void visitVarStmt(VarStmt& stmt) override;
+	void visitBlockStmt(BlockStmt& stmt) override;
 
 private:
 	Environment environment;
 
 	Object evaluate(const std::unique_ptr<Expr>& expr);
 	void execute(const std::unique_ptr<Stmt>& stmt);
+	void executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, Environment& newEnv);
 	bool isTruthy(const Object& object);
 	bool isEqual(const Object& a, const Object& b);
 	void checkNumberOperand(const Token& token, const Object& operand);

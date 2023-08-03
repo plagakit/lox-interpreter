@@ -20,6 +20,7 @@ private:
 	int current = 0;
 
 	std::unique_ptr<Expr> expression();
+	std::unique_ptr<Expr> assignment();
 	std::unique_ptr<Expr> equality();
 	std::unique_ptr<Expr> comparison();
 	std::unique_ptr<Expr> term();
@@ -32,6 +33,9 @@ private:
 	std::unique_ptr<Stmt> varDeclaration();
 	std::unique_ptr<Stmt> printStatement();
 	std::unique_ptr<Stmt> expressionStatement();
+	std::unique_ptr<Stmt> blockStatement();
+
+	std::vector<std::unique_ptr<Stmt>> block();
 
 	Token advance();
 	bool match(const std::vector<TokenType>& types);
