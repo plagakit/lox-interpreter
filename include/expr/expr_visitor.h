@@ -6,6 +6,7 @@ class AssignExpr;
 class BinaryExpr;
 class GroupingExpr;
 class LiteralExpr;
+class LogicalExpr;
 class UnaryExpr;
 class VariableExpr;
 
@@ -17,6 +18,7 @@ public:
 	virtual Object visitBinaryExpr(BinaryExpr& expr) = 0;
 	virtual Object visitGroupingExpr(GroupingExpr& expr) = 0;
 	virtual Object visitLiteralExpr(LiteralExpr& expr) = 0;
+	virtual Object visitLogicalExpr(LogicalExpr& expr) = 0;
 	virtual Object visitUnaryExpr(UnaryExpr& expr) = 0;
 	virtual Object visitVariableExpr(VariableExpr& expr) = 0;
 

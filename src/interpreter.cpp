@@ -7,6 +7,7 @@
 #include "expr/binary_expr.h"
 #include "expr/grouping_expr.h"
 #include "expr/literal_expr.h"
+#include "expr/logical_expr.h"
 #include "expr/unary_expr.h"
 #include "expr/variable_expr.h"
 #include "stmt/expression_stmt.h"
@@ -101,6 +102,23 @@ Object Interpreter::visitGroupingExpr(GroupingExpr& expr)
 Object Interpreter::visitLiteralExpr(LiteralExpr& expr)
 {
 	return expr.value;
+}
+
+Object Interpreter::visitLogicalExpr(LogicalExpr& expr)
+{
+	Object left = evaluate(expr.left);
+
+	if (expr.op.getType() == TokenType::OR)
+	{
+		if (isTruthy(left))
+			return left;
+	}
+	else { // and
+		if (!isTruthy(left))
+			return left;
+	}
+
+	return evaluate(expr.right);
 }
 
 Object Interpreter::visitUnaryExpr(UnaryExpr& expr)

@@ -19,6 +19,7 @@ public:
 	Object visitBinaryExpr(BinaryExpr& expr) override;
 	Object visitGroupingExpr(GroupingExpr& expr) override;
 	Object visitLiteralExpr(LiteralExpr& expr) override;
+	Object visitLogicalExpr(LogicalExpr& expr) override;
 	Object visitUnaryExpr(UnaryExpr& expr) override;
 	Object visitVariableExpr(VariableExpr& expr) override;
 

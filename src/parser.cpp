@@ -4,6 +4,7 @@
 #include "expr/binary_expr.h"
 #include "expr/unary_expr.h"
 #include "expr/literal_expr.h"
+#include "expr/logical_expr.h"
 #include "expr/grouping_expr.h"
 #include "expr/variable_expr.h"
 #include "stmt/print_stmt.h"
@@ -46,7 +47,7 @@ std::unique_ptr<Expr> Parser::expression()
 // assignment ::= IDENTIFIER "=" assignment | equality ;
 std::unique_ptr<Expr> Parser::assignment()
 {
-	auto expr = equality();
+	auto expr = orExpr();
 
 	if (match({ EQUAL }))
 	{
@@ -67,6 +68,34 @@ std::unique_ptr<Expr> Parser::assignment()
 
 	return expr;
 
+}
+
+std::unique_ptr<Expr> Parser::orExpr()
+{
+	auto expr = andExpr();
+
+	while (match({ OR }))
+	{
+		auto op = previous();
+		auto right = equality();
+		expr = std::make_unique<LogicalExpr>(expr, op, right);
+	}
+
+	return expr;
+}
+
+std::unique_ptr<Expr> Parser::andExpr()
+{
+	auto expr = equality();
+
+	while (match({ AND }))
+	{
+		auto op = previous();
+		auto right = equality();
+		expr = std::make_unique<LogicalExpr>(expr, op, right);
+	}
+
+	return expr;
 }
 
 // equality ::= comparison ( ( "!=" | "==" ) comparison )* ;
