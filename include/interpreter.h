@@ -26,6 +26,7 @@ public:
 	void visitPrintStmt(PrintStmt& stmt) override;
 	void visitVarStmt(VarStmt& stmt) override;
 	void visitBlockStmt(BlockStmt& stmt) override;
+	void visitIfStmt(IfStmt& stmt) override;
 
 private:
 	Environment environment;

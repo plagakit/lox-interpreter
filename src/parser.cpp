@@ -10,6 +10,7 @@
 #include "stmt/expression_stmt.h"
 #include "stmt/var_stmt.h"
 #include "stmt/block_stmt.h"
+#include "stmt/if_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
@@ -178,6 +179,9 @@ std::unique_ptr<Expr> Parser::primary()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
+	if (match({ IF }))
+		return ifStatement();
+	
 	if (match({ PRINT }))
 		return printStatement();
 
@@ -244,6 +248,20 @@ std::vector<std::unique_ptr<Stmt>> Parser::block()
 
 	consume(RIGHT_BRACE, "Expect '}' after block.");
 	return statements;
+}
+
+std::unique_ptr<Stmt> Parser::ifStatement()
+{
+	consume(LEFT_PAREN, "Expect '(' after 'if'.");
+	auto condition = expression();
+	consume(RIGHT_PAREN, "Expect ')' after if condition.");
+
+	auto thenBranch = statement();
+	auto elseBranch = std::unique_ptr<Stmt>(nullptr);
+	if (match({ ELSE }))
+		elseBranch = statement();
+
+	return std::make_unique<IfStmt>(condition, thenBranch, elseBranch);
 }
 
 
