@@ -5,4 +5,5 @@ target_sources(cpplox
 		var_stmt.cpp
 		block_stmt.cpp
 		if_stmt.cpp
+		while_stmt.cpp
 )

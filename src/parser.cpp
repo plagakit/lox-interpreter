@@ -12,6 +12,7 @@
 #include "stmt/var_stmt.h"
 #include "stmt/block_stmt.h"
 #include "stmt/if_stmt.h"
+#include "stmt/while_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
@@ -208,14 +209,11 @@ std::unique_ptr<Expr> Parser::primary()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
-	if (match({ IF }))
-		return ifStatement();
-	
-	if (match({ PRINT }))
-		return printStatement();
+	if (match({ IF }))		return ifStatement();
+	if (match({ PRINT }))	return printStatement();
+	if (match({ WHILE }))	return whileStatement();
 
-	if (match({ LEFT_BRACE }))
-		return blockStatement();
+	if (match({ LEFT_BRACE }))	return blockStatement();
 
 	return expressionStatement();
 }
@@ -248,6 +246,20 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 	return std::make_unique<VarStmt>(name, initializer);
 }
 
+std::unique_ptr<Stmt> Parser::ifStatement()
+{
+	consume(LEFT_PAREN, "Expect '(' after 'if'.");
+	auto condition = expression();
+	consume(RIGHT_PAREN, "Expect ')' after if condition.");
+
+	auto thenBranch = statement();
+	auto elseBranch = std::unique_ptr<Stmt>(nullptr);
+	if (match({ ELSE }))
+		elseBranch = statement();
+
+	return std::make_unique<IfStmt>(condition, thenBranch, elseBranch);
+}
+
 std::unique_ptr<Stmt> Parser::printStatement()
 {
 	auto value = expression();
@@ -260,6 +272,16 @@ std::unique_ptr<Stmt> Parser::expressionStatement()
 	auto value = expression();
 	consume(SEMICOLON, "Expect ';' after value.");
 	return std::make_unique<ExpressionStmt>(value);
+}
+
+std::unique_ptr<Stmt> Parser::whileStatement()
+{
+	consume(LEFT_PAREN, "Expect '(' after 'while'.");
+	auto condition = expression();
+	consume(RIGHT_PAREN, "Expect ')' after condition.");
+	auto body = statement();
+
+	return std::make_unique<WhileStmt>(condition, body);
 }
 
 std::unique_ptr<Stmt> Parser::blockStatement()
@@ -277,20 +299,6 @@ std::vector<std::unique_ptr<Stmt>> Parser::block()
 
 	consume(RIGHT_BRACE, "Expect '}' after block.");
 	return statements;
-}
-
-std::unique_ptr<Stmt> Parser::ifStatement()
-{
-	consume(LEFT_PAREN, "Expect '(' after 'if'.");
-	auto condition = expression();
-	consume(RIGHT_PAREN, "Expect ')' after if condition.");
-
-	auto thenBranch = statement();
-	auto elseBranch = std::unique_ptr<Stmt>(nullptr);
-	if (match({ ELSE }))
-		elseBranch = statement();
-
-	return std::make_unique<IfStmt>(condition, thenBranch, elseBranch);
 }
 
 

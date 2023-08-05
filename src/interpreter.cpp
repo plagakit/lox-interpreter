@@ -15,6 +15,7 @@
 #include "stmt/var_stmt.h"
 #include "stmt/block_stmt.h"
 #include "stmt/if_stmt.h"
+#include "stmt/while_stmt.h"
 #include <iostream>
 
 void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
@@ -152,6 +153,15 @@ void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
 	evaluate(stmt.expression);
 }
 
+void Interpreter::visitIfStmt(IfStmt& stmt)
+{
+	if (isTruthy(evaluate(stmt.condition)))
+		execute(stmt.thenBranch);
+
+	else if (stmt.elseBranch)
+		execute(stmt.elseBranch);
+}
+
 void Interpreter::visitPrintStmt(PrintStmt& stmt)
 {
 	Object value = evaluate(stmt.expression);
@@ -167,19 +177,16 @@ void Interpreter::visitVarStmt(VarStmt& stmt)
 	environment.define(stmt.name.getLexeme(), value);
 }
 
+void Interpreter::visitWhileStmt(WhileStmt& stmt)
+{
+	while (isTruthy(evaluate(stmt.condition)))
+		execute(stmt.statement);
+}
+
 void Interpreter::visitBlockStmt(BlockStmt& stmt)
 {
 	auto newEnv = Environment(environment);
 	executeBlock(stmt.statements, newEnv);
-}
-
-void Interpreter::visitIfStmt(IfStmt& stmt)
-{
-	if (isTruthy(evaluate(stmt.condition)))
-		execute(stmt.thenBranch);
-
-	else if (stmt.elseBranch)
-		execute(stmt.elseBranch);
 }
 
 

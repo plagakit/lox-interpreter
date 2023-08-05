@@ -24,10 +24,11 @@ public:
 	Object visitVariableExpr(VariableExpr& expr) override;
 
 	void visitExpressionStmt(ExpressionStmt& stmt) override;
+	void visitIfStmt(IfStmt& stmt) override;
 	void visitPrintStmt(PrintStmt& stmt) override;
 	void visitVarStmt(VarStmt& stmt) override;
+	void visitWhileStmt(WhileStmt& stmt) override;
 	void visitBlockStmt(BlockStmt& stmt) override;
-	void visitIfStmt(IfStmt& stmt) override;
 
 private:
 	Environment environment;
