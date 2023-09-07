@@ -1,6 +1,8 @@
 add_executable(lox_tests
+	test_utils.h
 	scanner_test.cpp
 	expression_test.cpp
+	statement_test.cpp
 )
 
 target_link_libraries(
