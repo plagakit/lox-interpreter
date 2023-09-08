@@ -13,6 +13,7 @@ class Stmt;
 class Interpreter : public ExprVisitor, public StmtVisitor {
 
 public:
+	Interpreter();
 	void interpret(const std::vector<std::unique_ptr<Stmt>>& statements);
 
 	Object visitAssignExpr(AssignExpr& expr) override;
@@ -31,11 +32,11 @@ public:
 	void visitBlockStmt(BlockStmt& stmt) override;
 
 private:
-	Environment environment;
+	std::shared_ptr<Environment> environment;
 
 	Object evaluate(const std::unique_ptr<Expr>& expr);
 	void execute(const std::unique_ptr<Stmt>& stmt);
-	void executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, Environment& newEnv);
+	void executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, std::shared_ptr<Environment> newEnv);
 	bool isTruthy(const Object& object);
 	bool isEqual(const Object& a, const Object& b);
 	void checkNumberOperand(const Token& token, const Object& operand);

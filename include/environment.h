@@ -10,7 +10,7 @@ class Environment {
 
 public:
 	Environment();
-	Environment(bool _copyPreventor, Environment& enclosing);
+	Environment(std::shared_ptr<Environment> parent);
 
 	void define(const std::string& name, const Object& value);
 	void assign(const Token& name, const Object& value);

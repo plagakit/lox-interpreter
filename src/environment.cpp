@@ -6,8 +6,8 @@ Environment::Environment() :
 	enclosing(nullptr)
 {}
 
-Environment::Environment(bool _copyPreventor, Environment& other) :
-	enclosing(std::make_shared<Environment>(false, other))
+Environment::Environment(std::shared_ptr<Environment> parent) :
+	enclosing(parent)
 {}
 
 void Environment::define(const std::string& name, const Object& value)

@@ -18,6 +18,10 @@
 #include "stmt/while_stmt.h"
 #include <iostream>
 
+Interpreter::Interpreter() :
+	environment(std::make_shared<Environment>())
+{}
+
 void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
 {
 	try 
@@ -36,7 +40,7 @@ void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements
 Object Interpreter::visitAssignExpr(AssignExpr& expr)
 {
 	Object value = evaluate(expr.value);
-	environment.assign(expr.name, value);
+	environment->assign(expr.name, value);
 	return value;
 }
 
@@ -143,7 +147,7 @@ Object Interpreter::visitUnaryExpr(UnaryExpr& expr)
 
 Object Interpreter::visitVariableExpr(VariableExpr& expr)
 {
-	return environment.get(expr.name);
+	return environment->get(expr.name);
 }
 
 // STATEMENTS
@@ -174,7 +178,7 @@ void Interpreter::visitVarStmt(VarStmt& stmt)
 	if (stmt.initializer)
 		value = evaluate(stmt.initializer);
 
-	environment.define(stmt.name.getLexeme(), value);
+	environment->define(stmt.name.getLexeme(), value);
 }
 
 void Interpreter::visitWhileStmt(WhileStmt& stmt)
@@ -186,7 +190,7 @@ void Interpreter::visitWhileStmt(WhileStmt& stmt)
 void Interpreter::visitBlockStmt(BlockStmt& stmt)
 {
 	auto newEnv = Environment(environment);
-	executeBlock(stmt.statements, newEnv);
+	executeBlock(stmt.statements, std::make_shared<Environment>(newEnv));
 }
 
 
@@ -202,9 +206,9 @@ void Interpreter::execute(const std::unique_ptr<Stmt>& stmt)
 	stmt->accept(*this);
 }
 
-void Interpreter::executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, Environment& newEnv)
+void Interpreter::executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, std::shared_ptr<Environment> newEnv)
 {
-	auto temp = environment;
+	std::shared_ptr<Environment> temp = environment;
 	try
 	{
 		environment = newEnv;
