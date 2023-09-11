@@ -19,6 +19,15 @@ TEST(StatementTest, ExpressionStmt)
 	ASSERT_STREQ(s1.c_str(), "");
 }
 
+TEST(StatementTest, ForStatement)
+{
+	auto s1 = process("for (var i = 0; i < 3; i = i + 1) print i;");
+	auto s2 = process("for (;false;) print 1;");
+
+	ASSERT_STREQ(s1.c_str(), "0.000000\n1.000000\n2.000000");
+	ASSERT_STREQ(s2.c_str(), "");
+}
+
 TEST(StatementTest, IfStmt)
 {
 	auto s1 = process("if (true) print \"yes\";");

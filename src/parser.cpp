@@ -209,6 +209,7 @@ std::unique_ptr<Expr> Parser::primary()
 
 std::unique_ptr<Stmt> Parser::statement()
 {
+	if (match({ FOR }))		return forStatement();
 	if (match({ IF }))		return ifStatement();
 	if (match({ PRINT }))	return printStatement();
 	if (match({ WHILE }))	return whileStatement();
@@ -244,6 +245,57 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
 	consume(SEMICOLON, "Expect ';' after variable declaration.");
 	return std::make_unique<VarStmt>(name, initializer);
+}
+
+std::unique_ptr<Stmt> Parser::forStatement()
+{
+	consume(LEFT_PAREN, "Expect '(' after 'for'.");
+
+	// Initializer
+	std::unique_ptr<Stmt> initializer;
+	if (match({ SEMICOLON }))
+		initializer = nullptr;
+	else if (match({ VAR }))
+		initializer = varDeclaration();
+	else
+		initializer = expressionStatement();
+
+	// Condition
+	std::unique_ptr<Expr> condition;
+	if (!check(SEMICOLON))
+		condition = expression();
+	consume(SEMICOLON, "Expect ';' after loop condition.");
+
+	// Increment
+	std::unique_ptr<Expr> increment;
+	if (!check(RIGHT_PAREN))
+		increment = expression();
+	
+	// Body
+	consume(RIGHT_PAREN, "Expect ')' after for clauses");
+	std::unique_ptr<Stmt> body = statement();
+	
+	
+	if (increment)
+	{
+		auto newBody = std::vector<std::unique_ptr<Stmt>>();
+		newBody.push_back(std::move(body));
+		newBody.push_back(std::make_unique<ExpressionStmt>(increment));
+		body = std::make_unique<BlockStmt>(std::move(newBody));
+	}
+	
+	if (condition == nullptr) condition = std::make_unique<LiteralExpr>(true);
+	body = std::make_unique<WhileStmt>(condition, body);
+
+	if (initializer)
+	{
+		auto newBody = std::vector<std::unique_ptr<Stmt>>();
+		newBody.push_back(std::move(initializer));
+		newBody.push_back(std::move(body));
+		body = std::make_unique<BlockStmt>(std::move(newBody));
+	}
+	
+	return body;
 }
 
 std::unique_ptr<Stmt> Parser::ifStatement()
