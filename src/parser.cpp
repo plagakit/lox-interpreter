@@ -7,6 +7,7 @@
 #include "expr/logical_expr.h"
 #include "expr/grouping_expr.h"
 #include "expr/variable_expr.h"
+#include "expr/call_expr.h"
 #include "stmt/print_stmt.h"
 #include "stmt/expression_stmt.h"
 #include "stmt/var_stmt.h"
@@ -169,10 +170,44 @@ std::unique_ptr<Expr> Parser::unary()
 		return std::make_unique<UnaryExpr>(op, right);
 	}
 
-	return primary();
+	return call();
 }
 
-//primary :: = NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
+// call ::= primary ( "(" arguments? ")" )* ;
+std::unique_ptr<Expr> Parser::call()
+{
+	auto expr = primary();
+
+	while (true)
+	{
+		if (match({ LEFT_PAREN }))
+			expr = finishCall(expr);
+		else
+			break;
+	}
+
+	return expr;
+}
+
+std::unique_ptr<Expr> Parser::finishCall(std::unique_ptr<Expr>& callee)
+{
+	std::vector<std::unique_ptr<Expr>> arguments;
+
+	if (!check(RIGHT_PAREN))
+	{
+		do {
+			if (arguments.size() >= 255)
+				error(peek(), "Can't have more than 255 arguments.");
+			arguments.push_back(expression());
+		} while (match({ COMMA }));
+	}
+
+	Token paren = consume(RIGHT_PAREN, "Expected ')' after arguments to function call.");
+
+	return std::make_unique<CallExpr>(callee, paren, arguments);
+}
+
+// primary :: = NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
 std::unique_ptr<Expr> Parser::primary()
 {
 	std::unique_ptr<Expr> expr = nullptr;

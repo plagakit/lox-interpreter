@@ -3,6 +3,7 @@
 #include "expr/expr_visitor.h"
 #include "stmt/stmt_visitor.h"
 #include "environment.h"
+#include "object.h"
 #include <memory>
 #include <vector>
 
@@ -18,6 +19,7 @@ public:
 
 	Object visitAssignExpr(AssignExpr& expr) override;
 	Object visitBinaryExpr(BinaryExpr& expr) override;
+	Object visitCallExpr(CallExpr& expr) override;
 	Object visitGroupingExpr(GroupingExpr& expr) override;
 	Object visitLiteralExpr(LiteralExpr& expr) override;
 	Object visitLogicalExpr(LogicalExpr& expr) override;
@@ -32,6 +34,7 @@ public:
 	void visitBlockStmt(BlockStmt& stmt) override;
 
 private:
+	std::shared_ptr<Environment> globals;
 	std::shared_ptr<Environment> environment;
 
 	Object evaluate(const std::unique_ptr<Expr>& expr);

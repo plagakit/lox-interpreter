@@ -3,8 +3,11 @@
 #include "lox.h"
 #include "runtime_error.h"
 #include "utils.h"
+#include "object.h"
+#include "callable.h"
 #include "expr/assign_expr.h"
 #include "expr/binary_expr.h"
+#include "expr/call_expr.h"
 #include "expr/grouping_expr.h"
 #include "expr/literal_expr.h"
 #include "expr/logical_expr.h"
@@ -17,10 +20,48 @@
 #include "stmt/if_stmt.h"
 #include "stmt/while_stmt.h"
 #include <iostream>
+#include <chrono>
 
 Interpreter::Interpreter() :
-	environment(std::make_shared<Environment>())
-{}
+	globals(std::make_shared<Environment>()),
+	environment(globals)
+{
+	class ClockGlobal : public Callable {
+	public:
+		int arity() const override { return 0; }
+		std::string toString() const override { return "<native fn>"; }
+		Object call(Interpreter& interpreter, std::vector<Object>& arguments) override
+		{
+			return (double)(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+		}
+	};
+
+	class PingGlobal : public Callable {
+	public:
+		int arity() const override { return 0; }
+		std::string toString() const override { return "<native fn>"; }
+		Object call(Interpreter& interpreter, std::vector<Object>& arguments) override
+		{
+			std::cout << "Pong!\n";
+			return std::monostate();
+		}
+	};
+
+	class ClearGlobal : public Callable {
+	public:
+		int arity() const override { return 0; }
+		std::string toString() const override { return "<native fn>"; }
+		Object call(Interpreter& interpreter, std::vector<Object>& arguments) override
+		{
+			system("cls");
+			return std::monostate();
+		}
+	};
+	
+	globals->define("clock", std::make_shared<ClockGlobal>());
+	globals->define("ping", std::make_shared<PingGlobal>());
+	globals->define("clear", std::make_shared<ClearGlobal>());
+}
 
 void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
 {
@@ -97,6 +138,21 @@ Object Interpreter::visitBinaryExpr(BinaryExpr& expr)
 	}
 
 	return std::monostate();
+}
+
+Object Interpreter::visitCallExpr(CallExpr& expr)
+{
+	Object callee = evaluate(expr.callee);
+
+	std::vector<Object> arguments;
+	for (auto& expr : expr.arguments)
+		arguments.push_back(evaluate(expr));
+
+	if (!std::holds_alternative<std::shared_ptr<Callable>>(callee))
+		throw RuntimeError(expr.paren, "Can only call functions and classes.");
+
+	auto function = std::get<std::shared_ptr<Callable>>(callee);
+	return function->call(*this, arguments);
 }
 
 Object Interpreter::visitGroupingExpr(GroupingExpr& expr)
