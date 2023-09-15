@@ -14,6 +14,7 @@
 #include "stmt/block_stmt.h"
 #include "stmt/if_stmt.h"
 #include "stmt/while_stmt.h"
+#include "stmt/function_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
@@ -258,6 +259,9 @@ std::unique_ptr<Stmt> Parser::declaration()
 {
 	try
 	{
+		if (match({ FUN }))
+			return function("function");
+		
 		if (match({ VAR }))
 			return varDeclaration();
 
@@ -280,6 +284,32 @@ std::unique_ptr<Stmt> Parser::varDeclaration()
 
 	consume(SEMICOLON, "Expect ';' after variable declaration.");
 	return std::make_unique<VarStmt>(name, initializer);
+}
+
+std::unique_ptr<Stmt> Parser::function(std::string kind)
+{
+	Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
+	
+	consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
+
+	std::vector<Token> parameters;
+	if (!check(RIGHT_PAREN))
+	{
+		do 
+		{
+			if (parameters.size() >= 255)
+				error(peek(), "Cannot have more than 255 parameters.");
+
+			parameters.push_back(consume(IDENTIFIER, "Expect parameter name."));
+		} 
+		while (match({ COMMA }));
+	}
+	consume(RIGHT_PAREN, "Expect ')' after " + kind + " name.");
+
+	consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+	auto body = block();
+	
+	return std::make_unique<FunctionStmt>(name, parameters, body);
 }
 
 std::unique_ptr<Stmt> Parser::forStatement()

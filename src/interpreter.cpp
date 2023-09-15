@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "object.h"
 #include "callable.h"
+#include "function.h"
 #include "expr/assign_expr.h"
 #include "expr/binary_expr.h"
 #include "expr/call_expr.h"
@@ -19,6 +20,7 @@
 #include "stmt/block_stmt.h"
 #include "stmt/if_stmt.h"
 #include "stmt/while_stmt.h"
+#include "stmt/function_stmt.h"
 #include <iostream>
 #include <chrono>
 
@@ -247,6 +249,13 @@ void Interpreter::visitBlockStmt(BlockStmt& stmt)
 {
 	auto newEnv = Environment(environment);
 	executeBlock(stmt.statements, std::make_shared<Environment>(newEnv));
+}
+
+void Interpreter::visitFunctionStmt(FunctionStmt& stmt)
+{
+	auto fnStmt = std::make_unique<FunctionStmt>(std::move(stmt));
+	auto function = std::make_shared<Function>(std::move(fnStmt));
+	environment->define(stmt.name.getLexeme(), function);
 }
 
 

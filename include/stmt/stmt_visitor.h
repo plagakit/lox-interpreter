@@ -6,6 +6,7 @@ class PrintStmt;
 class VarStmt;
 class WhileStmt;
 class BlockStmt;
+class FunctionStmt;
 
 class StmtVisitor {
 
@@ -17,5 +18,6 @@ public:
 	virtual void visitVarStmt(VarStmt& stmt) = 0;
 	virtual void visitWhileStmt(WhileStmt& stmt) = 0;
 	virtual void visitBlockStmt(BlockStmt& stmt) = 0;
+	virtual void visitFunctionStmt(FunctionStmt& stmt) = 0;
 
 };

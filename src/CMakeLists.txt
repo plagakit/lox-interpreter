@@ -17,6 +17,7 @@ target_sources(cpplox
 		environment.cpp
 		token.cpp
 		runtime_error.cpp
+		function.cpp
 		utils.cpp
 )
 

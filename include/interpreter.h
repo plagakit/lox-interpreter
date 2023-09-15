@@ -14,6 +14,9 @@ class Stmt;
 class Interpreter : public ExprVisitor, public StmtVisitor {
 
 public:
+	std::shared_ptr<Environment> globals;
+	std::shared_ptr<Environment> environment;
+
 	Interpreter();
 	void interpret(const std::vector<std::unique_ptr<Stmt>>& statements);
 
@@ -32,10 +35,7 @@ public:
 	void visitVarStmt(VarStmt& stmt) override;
 	void visitWhileStmt(WhileStmt& stmt) override;
 	void visitBlockStmt(BlockStmt& stmt) override;
-
-private:
-	std::shared_ptr<Environment> globals;
-	std::shared_ptr<Environment> environment;
+	void visitFunctionStmt(FunctionStmt& stmt) override;
 
 	Object evaluate(const std::unique_ptr<Expr>& expr);
 	void execute(const std::unique_ptr<Stmt>& stmt);
