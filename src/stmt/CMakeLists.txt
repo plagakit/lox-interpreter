@@ -7,4 +7,5 @@ target_sources(cpplox
 		if_stmt.cpp
 		while_stmt.cpp
 		function_stmt.cpp
+		return_stmt.cpp
 )

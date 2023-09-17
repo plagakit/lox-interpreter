@@ -4,6 +4,7 @@ class ExpressionStmt;
 class IfStmt;
 class PrintStmt;
 class VarStmt;
+class ReturnStmt;
 class WhileStmt;
 class BlockStmt;
 class FunctionStmt;
@@ -16,6 +17,7 @@ public:
 	virtual void visitIfStmt(IfStmt& stmt) = 0;
 	virtual void visitPrintStmt(PrintStmt& stmt) = 0;
 	virtual void visitVarStmt(VarStmt& stmt) = 0;
+	virtual void visitReturnStmt(ReturnStmt& stmt) = 0;
 	virtual void visitWhileStmt(WhileStmt& stmt) = 0;
 	virtual void visitBlockStmt(BlockStmt& stmt) = 0;
 	virtual void visitFunctionStmt(FunctionStmt& stmt) = 0;

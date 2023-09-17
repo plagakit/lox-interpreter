@@ -26,7 +26,8 @@ Object Function::call(Interpreter& interpreter, std::vector<Object>& arguments)
 		env->define(declaration->parameters[i].getLexeme(), arguments[i]);
 	}
 
-	interpreter.executeBlock(declaration->body, env);
+	try { interpreter.executeBlock(declaration->body, env); }
+	catch (Object value) { return value; } // catch a return value
 
 	return std::monostate();
 }

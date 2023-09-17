@@ -15,6 +15,7 @@
 #include "stmt/if_stmt.h"
 #include "stmt/while_stmt.h"
 #include "stmt/function_stmt.h"
+#include "stmt/return_stmt.h"
 #include "lox.h"
 
 Parser::Parser(const std::vector<Token>& tokens) :
@@ -248,6 +249,7 @@ std::unique_ptr<Stmt> Parser::statement()
 	if (match({ FOR }))		return forStatement();
 	if (match({ IF }))		return ifStatement();
 	if (match({ PRINT }))	return printStatement();
+	if (match({ RETURN }))	return returnStatement();
 	if (match({ WHILE }))	return whileStatement();
 
 	if (match({ LEFT_BRACE }))	return blockStatement();
@@ -389,6 +391,17 @@ std::unique_ptr<Stmt> Parser::expressionStatement()
 	auto value = expression();
 	consume(SEMICOLON, "Expect ';' after value.");
 	return std::make_unique<ExpressionStmt>(value);
+}
+
+std::unique_ptr<Stmt> Parser::returnStatement()
+{
+	Token keyword = previous();
+	std::unique_ptr<Expr> value = nullptr;
+	if (!check(SEMICOLON))
+		value = expression();
+
+	consume(SEMICOLON, "Expect ';' after return value.");
+	return std::make_unique<ReturnStmt>(keyword, value);
 }
 
 std::unique_ptr<Stmt> Parser::whileStatement()

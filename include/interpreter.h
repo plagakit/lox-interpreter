@@ -36,6 +36,7 @@ public:
 	void visitWhileStmt(WhileStmt& stmt) override;
 	void visitBlockStmt(BlockStmt& stmt) override;
 	void visitFunctionStmt(FunctionStmt& stmt) override;
+	void visitReturnStmt(ReturnStmt& stmt) override;
 
 	Object evaluate(const std::unique_ptr<Expr>& expr);
 	void execute(const std::unique_ptr<Stmt>& stmt);

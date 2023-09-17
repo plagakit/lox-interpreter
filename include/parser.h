@@ -42,6 +42,7 @@ private:
 	std::unique_ptr<Stmt> printStatement();
 	std::unique_ptr<Stmt> expressionStatement();
 	std::unique_ptr<Stmt> whileStatement();
+	std::unique_ptr<Stmt> returnStatement();
 
 	std::unique_ptr<Stmt> blockStatement();
 	std::vector<std::unique_ptr<Stmt>> block();

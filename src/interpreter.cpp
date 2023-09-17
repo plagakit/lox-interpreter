@@ -21,6 +21,7 @@
 #include "stmt/if_stmt.h"
 #include "stmt/while_stmt.h"
 #include "stmt/function_stmt.h"
+#include "stmt/return_stmt.h"
 #include <iostream>
 #include <chrono>
 
@@ -237,6 +238,15 @@ void Interpreter::visitVarStmt(VarStmt& stmt)
 		value = evaluate(stmt.initializer);
 
 	environment->define(stmt.name.getLexeme(), value);
+}
+
+void Interpreter::visitReturnStmt(ReturnStmt& stmt)
+{
+	Object value = std::monostate();
+	if (stmt.value != nullptr)
+		value = evaluate(stmt.value);
+
+	throw value;
 }
 
 void Interpreter::visitWhileStmt(WhileStmt& stmt)
