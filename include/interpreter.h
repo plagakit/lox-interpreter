@@ -4,6 +4,7 @@
 #include "stmt/stmt_visitor.h"
 #include "environment.h"
 #include "object.h"
+#include "expr/ast_printer.h"
 #include <memory>
 #include <vector>
 
@@ -16,6 +17,9 @@ class Interpreter : public ExprVisitor, public StmtVisitor {
 public:
 	std::shared_ptr<Environment> globals;
 	std::shared_ptr<Environment> environment;
+
+	ASTPrinter astPrinter;
+	int stackDepth = 0;
 
 	Interpreter();
 	void interpret(const std::vector<std::unique_ptr<Stmt>>& statements);

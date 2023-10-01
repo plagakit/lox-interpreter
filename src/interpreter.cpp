@@ -6,6 +6,7 @@
 #include "object.h"
 #include "callable.h"
 #include "function.h"
+
 #include "expr/assign_expr.h"
 #include "expr/binary_expr.h"
 #include "expr/call_expr.h"
@@ -14,6 +15,7 @@
 #include "expr/logical_expr.h"
 #include "expr/unary_expr.h"
 #include "expr/variable_expr.h"
+
 #include "stmt/expression_stmt.h"
 #include "stmt/print_stmt.h"
 #include "stmt/var_stmt.h"
@@ -22,12 +24,14 @@
 #include "stmt/while_stmt.h"
 #include "stmt/function_stmt.h"
 #include "stmt/return_stmt.h"
+
 #include <iostream>
 #include <chrono>
 
 Interpreter::Interpreter() :
 	globals(std::make_shared<Environment>()),
-	environment(globals)
+	environment(globals),
+	astPrinter(ASTPrinter())
 {
 	class ClockGlobal : public Callable {
 	public:
@@ -60,10 +64,23 @@ Interpreter::Interpreter() :
 			return std::monostate();
 		}
 	};
+
+	class ExecuteGlobal : public Callable {
+	public:
+		int arity() const override { return 1; }
+		std::string toString() const override { return "<native fn>"; }
+		Object call(Interpreter& interpreter, std::vector<Object>& arguments) override
+		{
+			if (std::holds_alternative<std::string>(arguments[0]))
+				Lox::runFile(std::get<std::string>(arguments[0]));
+			return std::monostate();
+		}
+	};
 	
 	globals->define("clock", std::make_shared<ClockGlobal>());
 	globals->define("ping", std::make_shared<PingGlobal>());
 	globals->define("clear", std::make_shared<ClearGlobal>());
+	globals->define("execute", std::make_shared<ExecuteGlobal>());
 }
 
 void Interpreter::interpret(const std::vector<std::unique_ptr<Stmt>>& statements)
@@ -155,7 +172,17 @@ Object Interpreter::visitCallExpr(CallExpr& expr)
 		throw RuntimeError(expr.paren, "Can only call functions and classes.");
 
 	auto function = std::get<std::shared_ptr<Callable>>(callee);
-	return function->call(*this, arguments);
+
+	if (arguments.size() != function->arity())
+		throw RuntimeError(expr.paren, "Expected " 
+			+ std::to_string(function->arity()) + " arguments but got " 
+			+ std::to_string(arguments.size()) + ".");
+
+
+	stackDepth++;
+	auto ret = function->call(*this, arguments);
+	stackDepth--;
+	return ret;
 }
 
 Object Interpreter::visitGroupingExpr(GroupingExpr& expr)
@@ -216,6 +243,14 @@ void Interpreter::visitExpressionStmt(ExpressionStmt& stmt)
 	evaluate(stmt.expression);
 }
 
+
+void Interpreter::visitFunctionStmt(FunctionStmt& stmt)
+{
+	auto fnStmt = std::make_unique<FunctionStmt>(std::move(stmt));
+	auto function = std::make_shared<Function>(std::move(fnStmt));
+	environment->define(stmt.name.getLexeme(), function);
+}
+
 void Interpreter::visitIfStmt(IfStmt& stmt)
 {
 	if (isTruthy(evaluate(stmt.condition)))
@@ -261,13 +296,6 @@ void Interpreter::visitBlockStmt(BlockStmt& stmt)
 	executeBlock(stmt.statements, std::make_shared<Environment>(newEnv));
 }
 
-void Interpreter::visitFunctionStmt(FunctionStmt& stmt)
-{
-	auto fnStmt = std::make_unique<FunctionStmt>(std::move(stmt));
-	auto function = std::make_shared<Function>(std::move(fnStmt));
-	environment->define(stmt.name.getLexeme(), function);
-}
-
 
 // HELPERS
 
@@ -290,7 +318,6 @@ void Interpreter::executeBlock(const std::vector<std::unique_ptr<Stmt>>& stmts, 
 
 		for (auto& stmt : stmts)
 			execute(stmt);
-
 	}
 	catch (RuntimeError e) 
 	{ 

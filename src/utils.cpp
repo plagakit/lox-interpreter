@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include "callable.h"
 #include <iostream>
 
 std::string Utils::objectToString(Object object)
@@ -12,7 +13,13 @@ std::string Utils::objectToString(Object object)
 
 	else if (std::holds_alternative<bool>(object))
 		return std::get<bool>(object) ? "true" : "false";
-	
+
+	else if (std::holds_alternative<std::shared_ptr<Callable>>(object))
+	{
+		auto obj = std::get<std::shared_ptr<Callable>>(object);
+		return obj->toString();
+	}
+
 	else
 		return "nil";
 }

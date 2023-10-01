@@ -2,6 +2,8 @@
 
 #include "runtime_error.h"
 
+auto Environment::environments = std::vector<std::shared_ptr<Environment>>();
+
 Environment::Environment() :
 	enclosing(nullptr)
 {}

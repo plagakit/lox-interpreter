@@ -42,7 +42,7 @@ void Lox::runPrompt()
 		
 		std::string line;
 		std::getline(std::cin, line);
-		std::cout << line << std::endl;
+		//std::cout << line << std::endl;
 		
 		if (line == "") 
 			break;
@@ -84,7 +84,7 @@ void Lox::run(const std::string& source)
 		return;
 
 	//ASTPrinter astPrinter;
-	//std::cout << astPrinter.print(expression) << std::endl;
+	//std::cout << astPrinter.print(statements) << "\n";
 
 	interpreter.interpret(statements);
 }
